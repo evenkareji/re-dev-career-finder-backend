@@ -2,11 +2,11 @@ import type { NextPage } from 'next';
 import Head from 'next/head';
 
 import { useUserContext } from '../features/context/auth';
+import { useRouter } from 'next/router';
 const Home: NextPage = () => {
-  const { fbUser, user, isLoading } = useUserContext();
-  console.log(fbUser);
-  console.log(user);
-
+  // 関数を実行し以下の変数を作成
+  const router = useRouter();
+  const { user, isLoading } = useUserContext();
   if (isLoading) {
     return (
       <>
@@ -19,6 +19,9 @@ const Home: NextPage = () => {
       </>
     );
   }
+  if (!user) {
+    router.push('/login');
+  }
   return (
     <div>
       <Head>
@@ -28,8 +31,8 @@ const Home: NextPage = () => {
       </Head>
       <header className="bg-slate-300 p-3">header</header>
       <main>
-        {fbUser?.displayName}
-        <p>{user ? user?.username : '無理'}</p>
+        {/* 監視したuser documentが空だから表示されない。故に作る必要がある */}
+        <p>{user?.username}</p>
       </main>
       <header className="bg-slate-200 p-2">footer</header>
     </div>
