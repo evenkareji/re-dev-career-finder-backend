@@ -36,7 +36,7 @@ const Home: NextPage = () => {
         {/* 監視したuser documentが空だから表示されない。故に作る必要がある */}
         <p>{user?.username}</p>
         <Button>
-          <Link href="post-form">
+          <Link href="create-post">
             <a>投稿</a>
           </Link>
         </Button>
