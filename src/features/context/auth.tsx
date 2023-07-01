@@ -32,7 +32,6 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         onSnapshot(ref, (snap) => {
           if (snap.data() === undefined && resultUser.displayName) {
             const userData: User | undefined | null = {
-              id: ref.id,
               username: resultUser.displayName,
             };
             setDoc(ref, userData);

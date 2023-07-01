@@ -9,7 +9,7 @@ export const useAuth = () => {
     return signInWithPopup(auth, provider)
       .then((result) => {
         alert(`${result.user.displayName}さんこんにちは`);
-        router.push('/logout');
+        router.push('/');
       })
       .catch((e) => console.log(e));
   };
