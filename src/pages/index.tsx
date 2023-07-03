@@ -21,8 +21,11 @@ const Home: NextPage = () => {
       </>
     );
   }
+  console.log(user, 'isUser');
+
   if (!user) {
-    router.push('/login');
+    console.log(user, 'isUser');
+    return;
   }
   return (
     <div>

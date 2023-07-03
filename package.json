@@ -9,15 +9,21 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "algoliasearch": "^4.18.0",
+    "date-fns": "^2.30.0",
+    "debounce": "^1.2.1",
     "firebase": "^9.23.0",
     "firebase-admin": "^11.9.0",
     "next": "12.3.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.45.1",
-    "react-hooks-form": "^2.0.1"
+    "react-hooks-form": "^2.0.1",
+    "react-instantsearch-hooks-web": "^6.45.0",
+    "swr": "^2.2.0"
   },
   "devDependencies": {
+    "@types/debounce": "^1.2.1",
     "@types/node": "20.3.2",
     "@types/react": "18.2.14",
     "@types/react-dom": "18.2.6",
