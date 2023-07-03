@@ -25,8 +25,10 @@ const searchClient = algoliasearch(
 );
 
 const Hit: HitsProps<Post>['hitComponent'] = ({ hit }) => {
-  const { author } = useAuthor(hit.authorId);
-  console.log(author);
+  console.log(hit.companyName, hit.authorId, 'hit');
+
+  const author = useAuthor(hit.authorId);
+  console.log(author, 'return author');
 
   return (
     <>
