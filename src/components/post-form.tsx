@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import Button from './button';
 import { useForm } from 'react-hook-form';
 import { useUserContext } from '../features/context/auth';
-import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../features/firebase/client';
 import { Post } from '../features/types/post';
 import { useRouter } from 'next/router';
@@ -54,6 +54,13 @@ const PostForm = ({ isEditMode }: { isEditMode: boolean }) => {
         alert(error);
       });
   };
+
+  // const deletePost = () => {
+  //   const ref = doc(db, `posts/${editId}`);
+  //   deleteDoc(ref).then(async () => {
+  //     alert('記事を削除しました');
+  //   });
+  // };
   return (
     <div className="p-6">
       <h1 className="font-bold text-lg">記事{isEditMode ? '編集' : '投稿'}</h1>
@@ -120,6 +127,7 @@ const PostForm = ({ isEditMode }: { isEditMode: boolean }) => {
           )}
         </div>
         <Button type="submit">{isEditMode ? '編集' : '投稿'}</Button>
+        {/* {isEditMode && <Button onClick={deletePost}>削除</Button>} */}
       </form>
     </div>
   );
