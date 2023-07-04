@@ -55,12 +55,12 @@ const PostForm = ({ isEditMode }: { isEditMode: boolean }) => {
       });
   };
 
-  // const deletePost = () => {
-  //   const ref = doc(db, `posts/${editId}`);
-  //   deleteDoc(ref).then(async () => {
-  //     alert('記事を削除しました');
-  //   });
-  // };
+  const deletePost = () => {
+    const ref = doc(db, `posts/${editId}`);
+    deleteDoc(ref).then(async () => {
+      alert('記事を削除しました');
+    });
+  };
   return (
     <div className="p-6">
       <h1 className="font-bold text-lg">記事{isEditMode ? '編集' : '投稿'}</h1>
@@ -127,7 +127,11 @@ const PostForm = ({ isEditMode }: { isEditMode: boolean }) => {
           )}
         </div>
         <Button type="submit">{isEditMode ? '編集' : '投稿'}</Button>
-        {/* {isEditMode && <Button onClick={deletePost}>削除</Button>} */}
+        {isEditMode && (
+          <Button type="button" onClick={deletePost}>
+            削除
+          </Button>
+        )}
       </form>
     </div>
   );
