@@ -3,7 +3,7 @@ import Button from './button';
 import { useForm } from 'react-hook-form';
 import { useUserContext } from '../features/context/auth';
 import { collection, deleteDoc, doc, getDoc, setDoc } from 'firebase/firestore';
-import { db } from '../features/firebase/client';
+import { auth, db } from '../features/firebase/client';
 import { Post } from '../features/types/post';
 import { useRouter } from 'next/router';
 
@@ -34,7 +34,7 @@ const PostForm = ({ isEditMode }: { isEditMode: boolean }) => {
     const ref = isEditMode
       ? doc(db, `posts/${editId}`)
       : doc(collection(db, 'posts'));
-    const newPost: Post = {
+    const post: Post = {
       id: isEditMode ? (editId as string) : ref.id,
       companyName: data.companyName,
       body: data.body,
@@ -44,11 +44,35 @@ const PostForm = ({ isEditMode }: { isEditMode: boolean }) => {
       createdAt: isEditMode ? data.createdAt : Date.now(),
       updateAt: isEditMode ? Date.now() : null,
     };
-    setDoc(ref, newPost)
-      .then(() => {
-        alert(`記事を${isEditMode ? '編集' : '作成'}しました`);
-        // isEditModeがfalseの時reset実行
-        isEditMode || reset();
+    setDoc(ref, post)
+      .then(async () => {
+        const path = `/posts/${post.id}`;
+
+        const token = await auth.currentUser?.getIdToken(true);
+        // pathのように書くことができる
+        fetch(`/api/revalidate?path=${path}`, {
+          method: 'POST',
+          headers: {
+            //  reqの headersにAuthorizationフィールドがある
+            Authorization: 'Bearer ' + token,
+          },
+        })
+          .then((res) => {
+            console.log('1');
+
+            res.json();
+          })
+          .then(() => {
+            console.log('2');
+
+            alert(`記事を${isEditMode ? '編集' : '作成'}しました`);
+            // isEditModeがfalseの時reset実行
+            isEditMode || reset();
+          })
+          .catch((err) => {
+            console.log(err);
+            alert('ページ再生成が失敗しました');
+          });
       })
       .catch((error) => {
         alert(error);
