@@ -22,7 +22,7 @@ const AuthContext = createContext<ContextType>({
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>();
   const [isLoading, setIsLoading] = useState(true);
-
+  // const [test, setTest] = useState('before');
   useEffect(() => {
     // 既存のユーザーがいる場合
     // ここに値が入る時はundefinedの可能性がない

@@ -1,4 +1,8 @@
 import algoliasearch from 'algoliasearch/lite';
+import { format } from 'date-fns';
+import { debounce } from 'debounce';
+import Link from 'next/link';
+import { ReactElement, ReactNode } from 'react';
 import {
   Configure,
   Hits,
@@ -9,16 +13,9 @@ import {
   SearchBoxProps,
   useInstantSearch,
 } from 'react-instantsearch-hooks-web';
-import { Post } from '../features/types/post';
-import { debounce } from 'debounce';
-import { ReactNode, useState } from 'react';
-import Link from 'next/link';
-import { User } from '../features/types/user';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../features/firebase/client';
-import { format } from 'date-fns';
-import useSWR from 'swr/immutable';
 import { useAuthor } from '../features/hooks/useAuthor';
+import { Post } from '../features/types/post';
+import Layout from '../components/layout';
 const searchClient = algoliasearch(
   '9NC2ACSGMS',
   'a0c919a9b685863fc45f07c6d6f51362',
@@ -79,4 +76,7 @@ const Search = () => {
   );
 };
 
+Search.getLayout = (page: ReactElement) => {
+  return <Layout>{page}</Layout>;
+};
 export default Search;
