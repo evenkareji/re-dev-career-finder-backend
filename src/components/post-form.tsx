@@ -28,7 +28,8 @@ const PostForm = ({ isEditMode }: { isEditMode: boolean }) => {
   }, [editId]);
 
   if (!user) {
-    return null;
+    router.push('/login');
+    return;
   }
   const submit = (data: Post) => {
     const ref = isEditMode
