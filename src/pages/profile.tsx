@@ -1,36 +1,65 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { ReactElement, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import Button from '../components/button';
 import { useUserContext } from '../features/context/auth';
-import { db } from '../features/firebase/client';
+import { db, storage } from '../features/firebase/client';
 import { User } from '../features/types/user';
-import { useEffect } from 'react';
+
+import ImageSelector from '../components/image-selector';
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadString,
+} from 'firebase/storage';
+import Layout from '../components/layout';
+import { useRouter } from 'next/router';
 
 const Profile = () => {
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    control,
+    formState: { errors, isSubmitting },
   } = useForm<User>();
-
-  const { user } = useUserContext();
+  const router = useRouter();
+  const { user, isLoading } = useUserContext();
 
   useEffect(() => {
-    const ref = doc(db, `users/${user?.id}`);
-    getDoc(ref).then((snap) => {
-      // alert('set');
-      reset(snap.data() as User);
-    });
+    reset(user as User);
   }, [user]);
 
-  const submit = (data: User) => {
-    const ref = doc(db, `users/${user?.id}`);
+  if (isLoading) {
+    return;
+  }
+  if (!user) {
+    router.push('/');
+    return;
+  }
+  console.log(user, 'expected avatar');
+  const submit = async (data: User) => {
+    console.log(data);
+    if (data.avatarURL?.match(/^data:/)) {
+      const imageRef = ref(storage, `users/${user?.id}/avatar`);
+      await uploadString(imageRef, data.avatarURL, 'data_url');
+      // その画像を受け取るための画像url
+      data.avatarURL = await getDownloadURL(imageRef);
+    }
+
+    if (!data.avatarURL && user?.avatarURL) {
+      const imageRef = ref(storage, `users/${user.id}`);
+      await deleteObject(imageRef);
+    }
+
+    const documentRef = doc(db, `users/${user?.id}`);
     const putUser = {
       username: data.username,
+      avatarURL: data.avatarURL,
     };
-    setDoc(ref, putUser, { merge: true }).then(() => {
-      alert('成功');
+    return setDoc(documentRef, putUser, { merge: true }).then(() => {
+      alert('更新しました');
     });
   };
 
@@ -38,12 +67,8 @@ const Profile = () => {
     <div className="p-6">
       <h1 className="font-bold text-lg">ユーザー編集</h1>
       <form className="space-y-3" onSubmit={handleSubmit(submit)}>
-        <div>
-          <label className="block" htmlFor="companyName">
-            プロフィール画像
-          </label>
-          <input type="file" />
-        </div>
+        <h2>プロフィール画像</h2>
+        <ImageSelector control={control} name="avatarURL" />
         <div>
           <label className="block" htmlFor="companyName">
             ユーザー名
@@ -67,10 +92,16 @@ const Profile = () => {
           )}
         </div>
 
-        <Button type="submit">編集</Button>
+        <Button disabled={isSubmitting} type="submit">
+          編集
+        </Button>
       </form>
     </div>
   );
+};
+
+Profile.getLayout = (page: ReactElement) => {
+  return <Layout>{page}</Layout>;
 };
 
 export default Profile;

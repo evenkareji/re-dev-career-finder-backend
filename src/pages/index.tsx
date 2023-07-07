@@ -23,9 +23,6 @@ const Home: NextPageWithLayout = () => {
     );
   }
 
-  if (!user) {
-    return;
-  }
   return (
     <div>
       <Head>
