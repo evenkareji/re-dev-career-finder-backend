@@ -51,7 +51,7 @@ const DetailPage = ({
   }, []);
   if (!post) return <p>記事が存在しません</p>;
 
-  const handleLike = () => {
+  const handleClickToggleLikePost = () => {
     if (!user) {
       return alert('ログインしてください');
     }
@@ -63,7 +63,7 @@ const DetailPage = ({
       Like(ref, user.id);
     }
   };
-  const handleStorage = () => {
+  const handleClickToggleSavePost = () => {
     if (!user) {
       return alert('ログインしてください');
     }
@@ -106,8 +106,11 @@ const DetailPage = ({
           </Link>
         </Button>
       )}
-      <HeartIcon onClick={handleLike} className="w-5 h-5 text-slate-500" />
-      <div onClick={handleStorage}>
+      <HeartIcon
+        onClick={handleClickToggleLikePost}
+        className="w-5 h-5 text-slate-500"
+      />
+      <div onClick={handleClickToggleSavePost}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
