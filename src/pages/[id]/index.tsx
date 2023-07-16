@@ -1,22 +1,16 @@
+import { HeartIcon } from '@heroicons/react/outline';
 import { format } from 'date-fns';
+import { doc, onSnapshot } from 'firebase/firestore';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import Button from '../../components/button';
 import { useUserContext } from '../../features/context/auth';
+import { db } from '../../features/firebase/client';
 import { adminDB } from '../../features/firebase/server';
 import { useAuthor } from '../../features/hooks/useAuthor';
 import { Post } from '../../features/types/post';
-import { HeartIcon } from '@heroicons/react/outline';
-import {
-  arrayRemove,
-  arrayUnion,
-  doc,
-  onSnapshot,
-  updateDoc,
-} from 'firebase/firestore';
-import { useEffect, useState } from 'react';
-import { db } from '../../features/firebase/client';
-
+import { useLike } from '../../features/hooks/useLikes';
 //  GetStaticProps<{ post: Post }>はreturnで入力したpropsを型で明示している
 // そしてジェネリクスの中身はDetailPageに渡るpropsの方と一致する
 // その場合InferGetStaticPropsType
@@ -42,7 +36,7 @@ const DetailPage = ({
   const { user } = useUserContext();
   const author = useAuthor(post?.authorId);
   const [realPost, setRealPost] = useState<Post>();
-
+  const { unLike, Like } = useLike();
   useEffect(() => {
     const ref = doc(db, `posts/${post.id}`);
     onSnapshot(ref, (snap) => {
@@ -55,24 +49,12 @@ const DetailPage = ({
     if (!user) {
       return <p>ログインしてください</p>;
     }
-
     const ref = doc(db, `posts/${realPost?.id}`);
+
     if (realPost?.likes.includes(user.id)) {
-      updateDoc(ref, { likes: arrayRemove(user.id) })
-        .then(() => {
-          alert('likes外した');
-        })
-        .catch((err) => {
-          alert(err);
-        });
+      unLike(ref, user.id);
     } else if (!realPost?.likes.includes(user.id)) {
-      updateDoc(ref, { likes: arrayUnion(user.id) })
-        .then(() => {
-          alert('likes追加');
-        })
-        .catch((err) => {
-          alert(err);
-        });
+      Like(ref, user.id);
     }
   };
 
