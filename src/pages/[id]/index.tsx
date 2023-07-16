@@ -1,6 +1,12 @@
 import { HeartIcon } from '@heroicons/react/outline';
 import { format } from 'date-fns';
-import { doc, onSnapshot } from 'firebase/firestore';
+import {
+  arrayRemove,
+  arrayUnion,
+  doc,
+  onSnapshot,
+  updateDoc,
+} from 'firebase/firestore';
 import { GetStaticProps, InferGetStaticPropsType } from 'next';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
@@ -47,7 +53,7 @@ const DetailPage = ({
 
   const handleLike = () => {
     if (!user) {
-      return <p>ログインしてください</p>;
+      return alert('ログインしてください');
     }
     const ref = doc(db, `posts/${realPost?.id}`);
 
@@ -55,6 +61,29 @@ const DetailPage = ({
       unLike(ref, user.id);
     } else if (!realPost?.likes.includes(user.id)) {
       Like(ref, user.id);
+    }
+  };
+  const handleStorage = () => {
+    if (!user) {
+      return alert('ログインしてください');
+    }
+
+    const ref = doc(db, `users/${user?.id}`);
+
+    if (user?.storage?.includes(realPost?.id)) {
+      updateDoc(ref, { storage: arrayRemove(realPost?.id) })
+        .then(() => {
+          alert('storage外した');
+        })
+        .catch((err) => {
+          alert(err);
+        });
+    } else if (!user?.storage?.includes(realPost?.id)) {
+      updateDoc(ref, { storage: arrayUnion(realPost?.id) })
+        .then(() => {
+          alert('保存に成功しました');
+        })
+        .catch((err) => alert(err));
     }
   };
 
@@ -78,6 +107,22 @@ const DetailPage = ({
         </Button>
       )}
       <HeartIcon onClick={handleLike} className="w-5 h-5 text-slate-500" />
+      <div onClick={handleStorage}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="w-6 h-6"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M20.25 7.5l-.625 10.632a2.25 2.25 0 01-2.247 2.118H6.622a2.25 2.25 0 01-2.247-2.118L3.75 7.5m8.25 3v6.75m0 0l-3-3m3 3l3-3M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125z"
+          />
+        </svg>
+      </div>
     </div>
   );
 };
