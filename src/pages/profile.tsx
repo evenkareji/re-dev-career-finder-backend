@@ -96,6 +96,7 @@ const Profile = () => {
           編集
         </Button>
       </form>
+      ddd;
     </div>
   );
 };
@@ -103,5 +104,4 @@ const Profile = () => {
 Profile.getLayout = (page: ReactElement) => {
   return <Layout>{page}</Layout>;
 };
-
 export default Profile;
