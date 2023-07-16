@@ -5,7 +5,6 @@ import Button from '../components/button';
 import { useUserContext } from '../features/context/auth';
 import { db, storage } from '../features/firebase/client';
 import { User } from '../features/types/user';
-
 import ImageSelector from '../components/image-selector';
 import {
   deleteObject,
@@ -96,7 +95,6 @@ const Profile = () => {
           編集
         </Button>
       </form>
-      ddd;
     </div>
   );
 };
