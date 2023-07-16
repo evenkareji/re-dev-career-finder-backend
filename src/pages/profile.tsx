@@ -5,7 +5,6 @@ import Button from '../components/button';
 import { useUserContext } from '../features/context/auth';
 import { db, storage } from '../features/firebase/client';
 import { User } from '../features/types/user';
-
 import ImageSelector from '../components/image-selector';
 import {
   deleteObject,
@@ -103,5 +102,4 @@ const Profile = () => {
 Profile.getLayout = (page: ReactElement) => {
   return <Layout>{page}</Layout>;
 };
-
 export default Profile;

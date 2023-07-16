@@ -4,6 +4,7 @@ export type Post = {
   body: string;
   authorId: string;
   occupation: string;
+  likes: Array<string | undefined | null>;
   createdAt: number;
   updateAt: number | null;
 };
