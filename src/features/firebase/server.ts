@@ -1,6 +1,7 @@
 import { cert, initializeApp, getApps } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
 
+// 本来は環境変数
 const FIREBASE_ADMIN_KEY = {
   type: 'service_account',
   project_id: 'carer-finder-demo',
