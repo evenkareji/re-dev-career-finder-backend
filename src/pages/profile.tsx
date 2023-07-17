@@ -43,7 +43,7 @@ const Profile = () => {
   // ------------------
   // 非同期関数を配列で実行していく場合、処理が終わる前に次のコードが実行されるため、かえってくる値がpromiseになってしまう
   // すべての処理を待って値をかえすためにpromise.allを使う必要がある
-
+  // バックエンドの動作に変更する必要ある
   Promise.all(
     user.storage.map(async (str) => {
       const postRef = doc(db, `posts/${str}`);
