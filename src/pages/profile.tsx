@@ -1,5 +1,5 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore';
-import { ReactElement, useEffect } from 'react';
+import { ReactElement, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import Button from '../components/button';
 import { useUserContext } from '../features/context/auth';
@@ -14,6 +14,8 @@ import {
 } from 'firebase/storage';
 import Layout from '../components/layout';
 import { useRouter } from 'next/router';
+import { Post } from '../features/types/post';
+import Link from 'next/link';
 
 const Profile = () => {
   const {
@@ -25,6 +27,7 @@ const Profile = () => {
   } = useForm<User>();
   const router = useRouter();
   const { user, isLoading } = useUserContext();
+  const [savedPosts, setSavedPosts] = useState<Post[]>();
 
   useEffect(() => {
     reset(user as User);
@@ -38,12 +41,19 @@ const Profile = () => {
     return;
   }
   // ------------------
-  const result = user.storage.map(async (str) => {
-    const postRef = doc(db, `posts/${str}`);
-    const snap = await getDoc(postRef);
-    return snap.data();
+  // 非同期関数を配列で実行していく場合、処理が終わる前に次のコードが実行されるため、かえってくる値がpromiseになってしまう
+  // すべての処理を待って値をかえすためにpromise.allを使う必要がある
+
+  Promise.all(
+    user.storage.map(async (str) => {
+      const postRef = doc(db, `posts/${str}`);
+      const snap = await getDoc(postRef);
+      return snap.data();
+    }),
+  ).then((result) => {
+    setSavedPosts(result as Post[]);
   });
-  console.log(result);
+  // 処理が完了する前に実行されてしまった関数はpromiseがかえる
 
   // ------------------
   const submit = async (data: User) => {
@@ -108,14 +118,18 @@ const Profile = () => {
       <div className="p-6 mx-auto w-5/12">
         <h2 className="font-bold text-lg">保存した記事</h2>
         <div className="mt-4">
-          <article className="border border-lime-400 rounded-md p-3 w-3/5">
-            <h3 className="font-bold">title</h3>
-            <p className="text-gray-500">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit
-              labore velit perspiciatis deserunt architecto obcaecati, veritatis
-              totam,
-            </p>
-          </article>
+          {savedPosts?.map((savedPost) => (
+            <article
+              key={savedPost.id}
+              className="border border-lime-400 rounded-md p-3 w-3/5"
+            >
+              <h3 className="font-bold">{savedPost.companyName}</h3>
+              <p className="text-gray-500">{savedPost.body}</p>
+              <Link href={`/${savedPost.id}`}>
+                <a>記事へ</a>
+              </Link>
+            </article>
+          ))}
         </div>
       </div>
     </>
