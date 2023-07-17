@@ -37,7 +37,15 @@ const Profile = () => {
     router.push('/');
     return;
   }
-  console.log(user, 'expected avatar');
+  // ------------------
+  const result = user.storage.map(async (str) => {
+    const postRef = doc(db, `posts/${str}`);
+    const snap = await getDoc(postRef);
+    return snap.data();
+  });
+  console.log(result);
+
+  // ------------------
   const submit = async (data: User) => {
     console.log(data);
     if (data.avatarURL?.match(/^data:/)) {
