@@ -1,6 +1,6 @@
 import { arrayRemove, arrayUnion, updateDoc } from 'firebase/firestore';
 
-export const useLike = () => {
+export const useToggleLike = () => {
   // const ref = doc(db, `posts/${realPost?.id}`);
   const unLike = (ref: any, userId: string) => {
     updateDoc(ref, { likes: arrayRemove(userId) })

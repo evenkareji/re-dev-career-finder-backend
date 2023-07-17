@@ -16,7 +16,8 @@ import { db } from '../../features/firebase/client';
 import { adminDB } from '../../features/firebase/server';
 import { useAuthor } from '../../features/hooks/useAuthor';
 import { Post } from '../../features/types/post';
-import { useLike } from '../../features/hooks/useLikes';
+import { useToggleLike } from '../../features/hooks/useToggleLikes';
+import { useToggleSavePost } from '../../features/hooks/useToggleSavePost';
 //  GetStaticProps<{ post: Post }>はreturnで入力したpropsを型で明示している
 // そしてジェネリクスの中身はDetailPageに渡るpropsの方と一致する
 // その場合InferGetStaticPropsType
@@ -38,15 +39,15 @@ export const getStaticPaths = () => {
 const DetailPage = ({
   post,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  console.log(post, '[id]');
   const { user } = useUserContext();
   const author = useAuthor(post?.authorId);
-  const [realPost, setRealPost] = useState<Post>();
-  const { unLike, Like } = useLike();
+  const [realTimePost, setRealTimePost] = useState<Post>();
+  const { unLike, Like } = useToggleLike();
+  const { savePost, removeSavedPost } = useToggleSavePost();
   useEffect(() => {
     const ref = doc(db, `posts/${post.id}`);
     onSnapshot(ref, (snap) => {
-      setRealPost(snap.data() as any);
+      setRealTimePost(snap.data() as any);
     });
   }, []);
   if (!post) return <p>記事が存在しません</p>;
@@ -55,11 +56,11 @@ const DetailPage = ({
     if (!user) {
       return alert('ログインしてください');
     }
-    const ref = doc(db, `posts/${realPost?.id}`);
+    const ref = doc(db, `posts/${realTimePost?.id}`);
 
-    if (realPost?.likes.includes(user.id)) {
+    if (realTimePost?.likes.includes(user.id)) {
       unLike(ref, user.id);
-    } else if (!realPost?.likes.includes(user.id)) {
+    } else if (!realTimePost?.likes.includes(user.id)) {
       Like(ref, user.id);
     }
   };
@@ -67,23 +68,16 @@ const DetailPage = ({
     if (!user) {
       return alert('ログインしてください');
     }
+    if (!realTimePost) {
+      return <>記事がありません</>;
+    }
 
     const ref = doc(db, `users/${user?.id}`);
 
-    if (user?.storage?.includes(realPost?.id)) {
-      updateDoc(ref, { storage: arrayRemove(realPost?.id) })
-        .then(() => {
-          alert('storage外した');
-        })
-        .catch((err) => {
-          alert(err);
-        });
-    } else if (!user?.storage?.includes(realPost?.id)) {
-      updateDoc(ref, { storage: arrayUnion(realPost?.id) })
-        .then(() => {
-          alert('保存に成功しました');
-        })
-        .catch((err) => alert(err));
+    if (user?.storage?.includes(realTimePost?.id)) {
+      removeSavedPost(ref, realTimePost?.id);
+    } else if (!user?.storage?.includes(realTimePost?.id)) {
+      savePost(ref, realTimePost?.id);
     }
   };
 
